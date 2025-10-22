@@ -13,11 +13,17 @@ class SelecaoCluster(Screen):
             "Cluster 03",
             "Cluster 04",
             "Cluster 05",
+            id="cluster_selecionado"
         )
         yield Button("Próximo", id="prox_botao")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "prox_botao":
+            radioset = self.query_one("cluster_selecionado", RadioSet)
+            selecionado = radioset.pressed
+            if selecionado:
+                valor = selecionado.label
+                self.app.data["cluster_selecionado"] = valor
             self.app.push_screen("segundo")
 
 
@@ -64,21 +70,32 @@ class ComandosDoJob(Screen):
         if event.button.id == "anterior_botao":
             self.app.pop_screen()
         elif event.button.id == "prox_botao":
-            self.app.exit()
+            self.app.push_screen("quarto")
         elif event.button.id == "adicionar_botao":
             input_widget = self.query_one("#comando_input", Input)
             lista = self.query_one("#lista_comandos", ListView)
             lista.append(Label(input_widget.value))
             input_widget.value = ""
 
+class RevisaoJob(Screen):
+    def compose(self) -> ComposeResult:
+        cluster = self.app.data.get("cluster_selecionado","nenhum")
+        yield Label("O cluster selecionado foi {cluster}")
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "anterior_botao":
+            self.app.pop_screen()
+        elif event.button.id == "prox_botao":
+            self.app.exit()
 
 class AppMain(App):
     def on_ready(self) -> None:
+        self.data = {}
         self.install_screen(SelecaoCluster(), name="primeiro")
         self.install_screen(InformacoesJob(), name="segundo")
         self.install_screen(ComandosDoJob(), name="terceiro")
+        self.install_screen(RevisaoJob(), name="quarto")
         self.push_screen("primeiro")
-
+    
 
 if __name__ == "__main__":
     app = AppMain()
