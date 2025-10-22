@@ -19,13 +19,12 @@ class SelecaoCluster(Screen):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "prox_botao":
-            radioset = self.query_one("cluster_selecionado", RadioSet)
+            radioset = self.query_one("#cluster_selecionado", RadioSet)
             selecionado = radioset.pressed
             if selecionado:
                 valor = selecionado.label
                 self.app.data["cluster_selecionado"] = valor
             self.app.push_screen("segundo")
-
 
 class InformacoesJob(Screen):
     def compose(self) -> ComposeResult:
